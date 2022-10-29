@@ -1,0 +1,15 @@
+.board {
+    display: grid;
+    grid-template: repeat(8, 70px) / repeat(8, 70px);
+    height: 560px;
+    width: 560px;
+    margin: 0 auto;
+    margin-top: 25%;
+    transform: translateY(-50%);
+    &__cell {
+        background-color: rgb(238,238,210);
+        &-black {
+            background-color: rgb(118,150,86);
+        }
+    }
+}
