@@ -1,18 +1,21 @@
 import React from "react";
-import {useDispatch}  from 'react-redux';
-import { createCellsArr } from "../../reducers/moveSlice";
 import Cell from '../cell/Cell';
+import { addPawns } from "../../reducers/moveSlice";
+import { useDispatch } from "react-redux";
 
 
 
 const Board  = () => {
-
-    const dispatch = useDispatch();
     const arr = [];
+    const dispatch = useDispatch();
     const coords = [8,7,6,5,4,3,2,1];
     for (let i = 0; i < coords.length; i++) {
         for(let j = 7; j >= 0; j--){
-            dispatch(createCellsArr({coords:[coords[i], coords[j]], vacant: false, id :`${coords[i]}` + coords[j]}));
+            if(i === 1 ) { 
+                dispatch(addPawns({coords: [coords[i], coords[j]], team: 'black', id: `${coords[i]}` + coords[j]}))
+            } else if (i === 6) {
+                dispatch(addPawns({coords: [coords[i], coords[j]], team: 'white', id: `${coords[i]}` + coords[j]}))
+            }
             arr.push({coords:[coords[i], coords[j]]})
         }
     }

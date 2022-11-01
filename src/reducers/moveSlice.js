@@ -1,50 +1,57 @@
-import { createSlice, createSelector } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 
 
 const initialState = {
-    cells: [],
-    activePiece: {}
+    pawns: {},
+    activeTeam: 'white',
 }
 
 
 const cellsSlice  = createSlice({
-    name: 'cells',
+    name: 'pieces',
     initialState,
     reducers: {
-        createCellsArr : (state, action) => {
-            state.cells.push(action.payload)
-        },
-        vacantCell : (state, action) => {
-            state.cells.forEach(item => {
-                if(item.coords[0] === action.payload[0] && item.coords[1] === action.payload[1]) {
-                    item.vacant = !item.vacant;
-                }
-            })
+        addPawns : (state, action) => {
+            state.pawns[action.payload.id] = {coords: action.payload.coords, team: action.payload.team};
         },
         bindActivePiece: (state, action) => {
-            state.activePiece = {coords:action.payload.coords, piece: action.payload.piece}
-        }
+            if(action.payload !== false){
+                state.activePiece = {coords:action.payload.coords, piece: action.payload.piece, variants:action.payload.varArr, team: action.payload.team}
+            } else {
+                delete state.activePiece
+            }
+            
+        },
+        changePieceCoords: (state, action) => {
+            delete state.pawns[action.payload.id];
+            state.pawns[`${action.payload.new[0]}` + action.payload.new[1]] = {coords: action.payload.new, team: action.payload.team}
+        },
+        bindActiveTeam: (state, action) => {
+            state.activeTeam = action.payload;
+        } 
     }
 })
 
+// const getCells = (state) => state.cells;
+// const getActiveItem = (state) => state.activePiece;
 
-export const activePieceSelector = createSelector(
-    (state) => state.cells,
-    (state) => state.activePiece,
-    (cells, active) =>{
-        switch (active.piece) {
-            case 'pawn':
-                return cells.filter(item => (active.coords[1] ===  cells.coords[1]) && 
-                                    (cells.coords[0] - active.coords[0] === 1 || 
-                                    cells.coords[0] - active.coords[0] === 2))
-            default:    
-                return null
-        }
-    }
-)
+
+// export const activePieceSelector = createSelector(
+//     [ getCells, getActiveItem ],
+//     (cells, active) => {
+//         switch (active.piece) {
+//             case 'pawn':
+//                 return cells.filter(item => (active.coords[1] ===  cells.coords[1]) && 
+//                                     (cells.coords[0] - active.coords[0] === 1 || 
+//                                      cells.coords[0] - active.coords[0] === 2))
+//             default:
+//                 return null
+//         }
+//     }
+// );
 
 const {actions, reducer} = cellsSlice;
 
 export default reducer;
-export const {createCellsArr, vacantCell, bindActivePiece} = actions;
+export const {addPawns, bindActivePiece, changePieceCoords, bindActiveTeam} = actions;
