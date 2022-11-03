@@ -3,4 +3,11 @@
     height: 100%;
     margin: 0 auto;
     cursor: pointer;
+    &__castle {
+        display: block;
+        transform: translateY(5%);
+        height: 90%;
+        margin: 0 auto;
+        cursor: pointer;
+    }
 }

@@ -1,18 +1,43 @@
 import React from "react";
 import Pawn from "../pawn/Pawn";
+import Castle from "../castle/Castle";
+import Knight from "../knight/Knight";
 import {useDispatch ,useSelector } from "react-redux";
-import { changePieceCoords, bindActivePiece, bindActiveTeam } from "../../reducers/moveSlice";
+import { deleteActivePiece, bindActiveTeam } from "../../reducers/activeSlice";
+import { changePawnCoords } from "../../reducers/piecesSlice";
 
 
 
 const Cell = ({props}) => {
     const black = props.black,
           coords = props.coords;
-    
+
     const dispatch = useDispatch();
-    const pawns = useSelector(state => state.cells.pawns?.[`${coords[0]}` + coords[1]]);
-    const active = useSelector(state => state.cells.activePiece);
-    const secondCell = useSelector(state => state.cells.pawns?.[`${active?.variants[0][0]}` + active?.variants[0][1]]);
+    const pieces = useSelector(state => state.pieces);
+    const active = useSelector(state => state.active.activePiece);
+
+
+    const pieceTypeSearch = (id, obj, property) =>{
+        let status = false;
+            status = obj[property]?.[id];
+        return status
+    }
+
+    function coordsConcat  () {
+        return `${coords[0]}` + coords[1]
+    }
+    
+    const dispatchMoveHelper = ( activePiece) => {
+        switch (activePiece.piece) {
+            case 'pawn':
+                dispatch(changePawnCoords({new: coords, id: `${activePiece.coords[0]}` + activePiece.coords[1], team: activePiece.team}));
+                dispatch(bindActiveTeam((activePiece.team === 'white') ? "black" : "white"));
+                dispatch(deleteActivePiece());
+                break;
+            default:
+                break
+        }
+    }
 
     const onDragOver = (e) => {
         e.preventDefault();
@@ -20,30 +45,49 @@ const Cell = ({props}) => {
     }
 
     const onDropElement = () => {
-        if(status && !pawns && !secondCell) {
-            console.log(pawns);
-            console.log(secondCell);
-            dispatch(changePieceCoords({new: coords, id: `${active.coords[0]}` + active.coords[1], team: active.team}));
-            dispatch(bindActiveTeam((active.team === 'white') ? "black" : "white"))
-            dispatch(bindActivePiece(false))
-        }
+        if(canMove || canCapture) {
+            dispatchMoveHelper(active)}
     }
+
 
     const isEqual = (arr1, arr2) => {
         let status = false;
         arr2.forEach(item => {
             if(item[0] === arr1[0] && item[1] === arr1[1]) {
-                status = true
+                status = true;
             }
         })
         return status
     }
-    const status = (!active) ? false : isEqual(coords, active.variants);
+
+    const cellClassNameHelper = () => {
+        if(black){
+            if(canCapture){
+                return 'board__cell-black board__cell-capture'
+            } else {
+                return 'board__cell-black'
+            }
+        } else {
+            if (canCapture) {
+                return 'board__cell board__cell-capture'
+            } else {
+                return 'board__cell'
+            }
+        }
+    }
+
+    const canMove = (active) ? isEqual(coords, active.variants) : false;
+    const canCapture = (active) ? isEqual(coords, active.captures) : false;
     return (
         <>
-            <div onDragOver={onDragOver} onDrop={onDropElement} className={(black) ? "board__cell-black" : "board__cell"}>
-                {(pawns) ? <Pawn props={{coords: pawns.coords, team: pawns.team}}/> : null}
-                {(status && !pawns && !secondCell ) ? <div className="board__cell-variant"></div> : null }
+            <div onDragOver={onDragOver}
+                 onDrop={onDropElement}
+                 className={cellClassNameHelper()}>
+                {(pieceTypeSearch(coordsConcat(), pieces, 'pawns')) ? <Pawn props={{...pieceTypeSearch(coordsConcat(), pieces, 'pawns')}}/> : null}
+                {/* {(castles) ? <Castle props={{coords: castles.coords, team: castles.team}}/> : null} */}
+                {/* {(knights) ? <Knight props={{coords: knights.coords, team: knights.team}}/> : null} */}
+                {(canMove) ? <div className="board__cell-variant"></div> : null }
+              
             </div>
         </>
     )

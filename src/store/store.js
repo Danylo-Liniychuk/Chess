@@ -1,8 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import cells from '../reducers/moveSlice'
+import active from '../reducers/activeSlice';
+import pieces from '../reducers/piecesSlice'
 
 const store = configureStore({
-    reducer: {cells},
+    reducer: {active, pieces},
     middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
     devTools: process.env.NODE_ENV !== 'production'
 });

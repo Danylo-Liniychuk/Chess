@@ -1,33 +1,82 @@
 import React from "react";
-import { useEffect } from "react";
 import blackPawn from '../../assets/blackPawn.svg';
 import whitePawn from '../../assets/whitePawn.svg';
-import {bindActivePiece} from "../../reducers/moveSlice";
+import {bindActivePiece, deleteActivePiece} from "../../reducers/activeSlice";
 import { useDispatch, useSelector} from "react-redux";
+
+
+
 
 const Pawn = ({props}) => {
     const dispatch = useDispatch();
     let {coords, team} = props;
-    const activeTeam = useSelector(state => state.cells.activeTeam)
-    // useEffect(() => {
-    //     dispatch(addVacantCell({coords, id: `${coords[0]}` + coords[1]}))
-    // }, [coords])
+    const pieces = useSelector(state => state.pieces);
+    const activeTeam = useSelector(state => state.active.activeTeam)
+
+
+    const idCreator = (team, method = 'move') => {
+        if(method === 'move') {
+            if(team === 'white') {
+                return `${coords[0] + 1}` + coords[1]
+            } else {
+                return `${coords[0] - 1}` + coords[1]
+            }
+        } else{
+            if(team === 'white') {
+                return [`${coords[0] + 1}` + (coords[1] + 1), `${coords[0] + 1}`+ (coords[1] - 1)]
+            } else {
+                return [`${coords[0] - 1}` + (coords[1] + 1), `${coords[0] - 1}`+ (coords[1] - 1)]
+            }
+        }
+    }
+
+
+    const vacantCellsSearch = (id, obj) => {
+        let status = false;
+        for (let i in obj) {
+            status = obj[i].hasOwnProperty(id);
+            if(status) {
+                break
+            }
+        }
+        return status
+    }
+    
+    const moveVariantsHelper = (team, coords) => {
+            let moveArr = [],
+            id = idCreator(team),
+            nextCellVacant = vacantCellsSearch(id, pieces);
+            if(coords[0] === 2) {
+                moveArr = (nextCellVacant) ?  [] : [[coords[0] + 1, coords[1]], [coords[0] + 2, coords[1]]];
+            } else if(coords[0] === 7){
+                moveArr = (nextCellVacant) ?  [] : [[coords[0] - 1, coords[1]], [coords[0] - 2, coords[1]]];
+            } else {
+                moveArr = (nextCellVacant) ?  [] : [[+id[0], +id[1]]];
+            }
+            return moveArr
+    }
+    
+    const capturesHelper = (team, coords) => {
+        let captureArr = [], 
+            captureVariants = idCreator(team, 'capture');
+        captureVariants.forEach(item => {
+            if (vacantCellsSearch(item, pieces)){
+                captureArr.push([+item[0], +item[1]])
+            }
+        })
+        return captureArr;
+    }
 
     const onPawnDrag = () => {
-        let varArr
-        if (team === 'white' && coords[0] === 2){
-            varArr = [[coords[0] + 1, coords[1]], [coords[0] + 2, coords[1]]]
-        } else if ( team === 'black' && coords[0] === 7) {
-            varArr = [[coords[0] - 1, coords[1]], [coords[0] - 2, coords[1]]]
-        } else if ( team === 'white') {
-            varArr = [[coords[0] + 1, coords[1]]]
-        } else {
-            varArr = [[coords[0] - 1, coords[1]]]
-        }
-        dispatch(bindActivePiece({coords:coords, piece: "pawn", varArr, team}));
+        dispatch(bindActivePiece({coords:coords,
+                                  piece: "pawn",
+                                  moveArr: moveVariantsHelper(team, coords),
+                                  team,
+                                  captureArr:capturesHelper(team, coords)}));
     }
+
     const onDragEnd = () => {
-        dispatch(bindActivePiece(false))
+        dispatch(deleteActivePiece());
     }
     return(
         <>
