@@ -4,8 +4,7 @@ import Castle from "../castle/Castle";
 import Knight from "../knight/Knight";
 import {useDispatch ,useSelector } from "react-redux";
 import { deleteActivePiece, bindActiveTeam } from "../../reducers/activeSlice";
-import { changePawnCoords } from "../../reducers/piecesSlice";
-
+import { changePawnCoords, changeCastleCoords, capturePiece } from "../../reducers/piecesSlice";
 
 
 const Cell = ({props}) => {
@@ -23,20 +22,52 @@ const Cell = ({props}) => {
         return status
     }
 
+    const getCapturedData = (obj) => {
+        for(let key in obj) {
+            if(obj[key].hasOwnProperty(coordsConcat())) {
+                return key;
+            }
+        }
+    }
+
+
     function coordsConcat  () {
         return `${coords[0]}` + coords[1]
     }
     
-    const dispatchMoveHelper = ( activePiece) => {
+    const dispatchMoveHelper = (activePiece) => {
         switch (activePiece.piece) {
-            case 'pawn':
-                dispatch(changePawnCoords({new: coords, id: `${activePiece.coords[0]}` + activePiece.coords[1], team: activePiece.team}));
+            case 'pawns':
+                dispatch(changePawnCoords({new: coords,
+                                           id: `${activePiece.coords[0]}` + activePiece.coords[1],
+                                           team: activePiece.team}));
+
                 dispatch(bindActiveTeam((activePiece.team === 'white') ? "black" : "white"));
                 dispatch(deleteActivePiece());
                 break;
+            case 'castles':
+                dispatch(changeCastleCoords({new: coords,
+                                             id: `${activePiece.coords[0]}` + activePiece.coords[1],
+                                             team: activePiece.team}));
+
+                dispatch(bindActiveTeam((activePiece.team === 'white') ? "black" : "white"));
+                dispatch(deleteActivePiece());
+                break
             default:
                 break
         }
+    }
+
+    const dispatchCaptureHelper = (activePiece) => {
+        dispatch(capturePiece({capturedType : getCapturedData(pieces),
+            capturedId: coordsConcat(),
+            invaderType: activePiece.piece,
+            invaderId:  `${activePiece.coords[0]}` + activePiece.coords[1],
+            new: coords,
+            team: activePiece.team}))
+
+        dispatch(bindActiveTeam((activePiece.team === 'white') ? "black" : "white"));
+        dispatch(deleteActivePiece());
     }
 
     const onDragOver = (e) => {
@@ -45,8 +76,11 @@ const Cell = ({props}) => {
     }
 
     const onDropElement = () => {
-        if(canMove || canCapture) {
-            dispatchMoveHelper(active)}
+        if(canMove) {
+            dispatchMoveHelper(active)
+        } else if (canCapture){
+            dispatchCaptureHelper(active)
+        }
     }
 
 
@@ -84,7 +118,7 @@ const Cell = ({props}) => {
                  onDrop={onDropElement}
                  className={cellClassNameHelper()}>
                 {(pieceTypeSearch(coordsConcat(), pieces, 'pawns')) ? <Pawn props={{...pieceTypeSearch(coordsConcat(), pieces, 'pawns')}}/> : null}
-                {/* {(castles) ? <Castle props={{coords: castles.coords, team: castles.team}}/> : null} */}
+                {(pieceTypeSearch(coordsConcat(), pieces, 'castles')) ? <Castle props={{...pieceTypeSearch(coordsConcat(), pieces, 'castles')}}/> : null}
                 {/* {(knights) ? <Knight props={{coords: knights.coords, team: knights.team}}/> : null} */}
                 {(canMove) ? <div className="board__cell-variant"></div> : null }
               

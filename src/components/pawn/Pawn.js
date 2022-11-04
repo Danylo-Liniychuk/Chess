@@ -5,7 +5,21 @@ import {bindActivePiece, deleteActivePiece} from "../../reducers/activeSlice";
 import { useDispatch, useSelector} from "react-redux";
 
 
-
+export const vacantCellsSearch = (id, obj, getObj = false) => {
+        let status = false, desiredObj = null;
+        for (let i in obj) {
+            status = obj[i].hasOwnProperty(id);
+            if(status) {
+                desiredObj = obj[i][id]
+                break
+            }
+        }
+        if (!getObj) {
+            return status
+        } else {
+            return desiredObj
+        }
+}
 
 const Pawn = ({props}) => {
     const dispatch = useDispatch();
@@ -29,26 +43,14 @@ const Pawn = ({props}) => {
             }
         }
     }
-
-
-    const vacantCellsSearch = (id, obj) => {
-        let status = false;
-        for (let i in obj) {
-            status = obj[i].hasOwnProperty(id);
-            if(status) {
-                break
-            }
-        }
-        return status
-    }
     
     const moveVariantsHelper = (team, coords) => {
             let moveArr = [],
             id = idCreator(team),
             nextCellVacant = vacantCellsSearch(id, pieces);
-            if(coords[0] === 2) {
+            if(coords[0] === 2 && team === 'white') {
                 moveArr = (nextCellVacant) ?  [] : [[coords[0] + 1, coords[1]], [coords[0] + 2, coords[1]]];
-            } else if(coords[0] === 7){
+            } else if(coords[0] === 7 && team === 'black'){
                 moveArr = (nextCellVacant) ?  [] : [[coords[0] - 1, coords[1]], [coords[0] - 2, coords[1]]];
             } else {
                 moveArr = (nextCellVacant) ?  [] : [[+id[0], +id[1]]];
@@ -60,7 +62,7 @@ const Pawn = ({props}) => {
         let captureArr = [], 
             captureVariants = idCreator(team, 'capture');
         captureVariants.forEach(item => {
-            if (vacantCellsSearch(item, pieces)){
+            if (vacantCellsSearch(item, pieces) && vacantCellsSearch(item, pieces, true).team !== team){
                 captureArr.push([+item[0], +item[1]])
             }
         })
@@ -69,7 +71,7 @@ const Pawn = ({props}) => {
 
     const onPawnDrag = () => {
         dispatch(bindActivePiece({coords:coords,
-                                  piece: "pawn",
+                                  piece: "pawns",
                                   moveArr: moveVariantsHelper(team, coords),
                                   team,
                                   captureArr:capturesHelper(team, coords)}));
