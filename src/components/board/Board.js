@@ -1,6 +1,6 @@
 import React from "react";
 import Cell from '../cell/Cell';
-import { addPawn, addCastle, addKnight } from "../../reducers/piecesSlice";
+import { addPawn, addCastle, addKnight, addBishop } from "../../reducers/piecesSlice";
 import { useDispatch } from "react-redux";
 
 
@@ -24,12 +24,16 @@ const Board  = () => {
             } else if (i === 0 && (j === 7 || j === 0)) {
                 dispatchPiece(addCastle, i, j, 'black')
             } else if (i === 7 && (j === 7 || j === 0)) {
-                dispatchPiece(addCastle, i, j, 'white')}
-            // } else if (i === 0 && (j === 6 || j === 1)) {
-            //     dispatchPiece(addKnight, i, j, 'black')
-            // } else if (i === 7 && (j === 6 || j === 1)) {
-            //     dispatchPiece(addKnight, i, j, 'white')
-            // }
+                dispatchPiece(addCastle, i, j, 'white')
+            } else if (i === 0 && (j === 6 || j === 1)) {
+                dispatchPiece(addKnight, i, j, 'black')
+            } else if (i === 7 && (j === 6 || j === 1)) {
+                dispatchPiece(addKnight, i, j, 'white')
+            } else if (i === 0 && (j === 5 || j === 2)) {
+                dispatchPiece(addBishop, i, j, 'black')
+            } else if (i === 7 && (j === 5 || j === 2)) {
+                dispatchPiece(addBishop, i, j, 'white')
+            }
             arr.push({coords:[coords[i], coords[j]]})
         }
     }

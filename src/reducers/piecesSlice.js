@@ -5,6 +5,7 @@ const initialState = {
     pawns: {},
     castles: {},
     knights: {},
+    bishops: {}
 }
 
 const piecesSlice = createSlice({
@@ -14,6 +15,15 @@ const piecesSlice = createSlice({
         addPawn : (state, action) => {
             state.pawns[action.payload.id] = {coords: action.payload.coords, team: action.payload.team};
         },
+        addCastle: (state, action) => {
+            state.castles[action.payload.id] = {coords: action.payload.coords, team: action.payload.team};
+        },
+        addKnight: (state, action) => {
+            state.knights[action.payload.id] = {coords: action.payload.coords, team: action.payload.team};
+        },
+        addBishop: (state, action) => {
+            state.bishops[action.payload.id] = {coords: action.payload.coords, team: action.payload.team};
+        },  
         capturePiece : (state, action) => {
             delete state[action.payload.capturedType][action.payload.capturedId];
             delete state[action.payload.invaderType][action.payload.invaderId];
@@ -23,15 +33,17 @@ const piecesSlice = createSlice({
             delete state.pawns[action.payload.id];
             state.pawns[`${action.payload.new[0]}` + action.payload.new[1]] = {coords: action.payload.new, team: action.payload.team}
         },
-        addCastle: (state, action) => {
-            state.castles[action.payload.id] = {coords: action.payload.coords, team: action.payload.team};
-        },
-        addKnight: (state, action) => {
-            state.knights[action.payload.id] = {coords: action.payload.coords, team: action.payload.team};
-        },
         changeCastleCoords : (state, action) => {
             delete state.castles[action.payload.id];
             state.castles[`${action.payload.new[0]}` + action.payload.new[1]] = {coords: action.payload.new, team: action.payload.team}
+        },
+        changeKnightsCoords: (state, action) => {
+            delete state.knights[action.payload.id];
+            state.knights[`${action.payload.new[0]}` + action.payload.new[1]] = {coords: action.payload.new, team: action.payload.team}
+        },
+        changeBishopsCoords: (state, action) => {
+            delete state.bishops[action.payload.id];
+            state.bishops[`${action.payload.new[0]}` + action.payload.new[1]] = {coords: action.payload.new, team: action.payload.team}
         }
     }
 })
@@ -43,7 +55,9 @@ export const {
     addPawn,
     addCastle,
     addKnight,
+    addBishop,
     changeCastleCoords,
     changePawnCoords,
-    capturePiece
-} = actions
+    capturePiece,
+    changeKnightsCoords,
+    changeBishopsCoords  } = actions

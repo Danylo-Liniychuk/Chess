@@ -74,7 +74,6 @@ const Castle = ({props}) => {
             moveArr.push([i, coords[1]])
         }
         moveArr = moveArr.filter(item => JSON.stringify(item) !== JSON.stringify(coords));
-        console.log(captureArr)
         dispatch(bindActivePiece({coords:coords, piece: "castles", moveArr, team, captureArr}));
     }
 
