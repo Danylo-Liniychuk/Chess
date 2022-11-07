@@ -5,7 +5,7 @@ import Knight from "../knight/Knight";
 import Bishop from '../bishop/Bishop';
 import {useDispatch ,useSelector } from "react-redux";
 import { deleteActivePiece, bindActiveTeam } from "../../reducers/activeSlice";
-import { changePawnCoords, changeCastleCoords, changeKnightsCoords, capturePiece } from "../../reducers/piecesSlice";
+import { changePawnCoords, changeCastleCoords, changeKnightsCoords, capturePiece, changeBishopsCoords } from "../../reducers/piecesSlice";
 
 
 const Cell = ({props}) => {
@@ -58,6 +58,13 @@ const Cell = ({props}) => {
                 dispatch(changeKnightsCoords({new: coords,
                                              id: `${activePiece.coords[0]}` + activePiece.coords[1],
                                              team: activePiece.team}));
+                dispatch(bindActiveTeam((activePiece.team === 'white') ? "black" : "white"));
+                dispatch(deleteActivePiece());
+                break
+            case 'bishops':
+                dispatch(changeBishopsCoords({new: coords,
+                    id: `${activePiece.coords[0]}` + activePiece.coords[1],
+                    team: activePiece.team}));
                 dispatch(bindActiveTeam((activePiece.team === 'white') ? "black" : "white"));
                 dispatch(deleteActivePiece());
                 break
