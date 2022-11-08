@@ -3,9 +3,10 @@ import Pawn from "../pawn/Pawn";
 import Castle from "../castle/Castle";
 import Knight from "../knight/Knight";
 import Bishop from '../bishop/Bishop';
+import Queen from "../queen/Queen";
 import {useDispatch ,useSelector } from "react-redux";
 import { deleteActivePiece, bindActiveTeam } from "../../reducers/activeSlice";
-import { changePawnCoords, changeCastleCoords, changeKnightsCoords, capturePiece, changeBishopsCoords } from "../../reducers/piecesSlice";
+import { changePawnCoords, changeCastleCoords, changeKnightsCoords, capturePiece, changeBishopsCoords, changeQueensCoords } from "../../reducers/piecesSlice";
 
 
 const Cell = ({props}) => {
@@ -63,6 +64,13 @@ const Cell = ({props}) => {
                 break
             case 'bishops':
                 dispatch(changeBishopsCoords({new: coords,
+                    id: `${activePiece.coords[0]}` + activePiece.coords[1],
+                    team: activePiece.team}));
+                dispatch(bindActiveTeam((activePiece.team === 'white') ? "black" : "white"));
+                dispatch(deleteActivePiece());
+                break
+            case 'queens':
+                dispatch(changeQueensCoords({new: coords,
                     id: `${activePiece.coords[0]}` + activePiece.coords[1],
                     team: activePiece.team}));
                 dispatch(bindActiveTeam((activePiece.team === 'white') ? "black" : "white"));
@@ -136,6 +144,7 @@ const Cell = ({props}) => {
                 {(pieceTypeSearch(coordsConcat(), pieces, 'castles')) ? <Castle props={{...pieceTypeSearch(coordsConcat(), pieces, 'castles')}}/> : null}
                 {(pieceTypeSearch(coordsConcat(), pieces, 'knights')) ? <Knight props={{...pieceTypeSearch(coordsConcat(), pieces, 'knights')}}/> : null}
                 {(pieceTypeSearch(coordsConcat(), pieces, 'bishops')) ? <Bishop props={{...pieceTypeSearch(coordsConcat(), pieces, 'bishops')}}/> : null}
+                {(pieceTypeSearch(coordsConcat(), pieces, 'queens')) ? <Queen props={{...pieceTypeSearch(coordsConcat(), pieces, 'queens')}}/> : null}
                 {(canMove) ? <div className="board__cell-variant"></div> : null }
               
             </div>

@@ -3,23 +3,9 @@ import blackPawn from '../../assets/blackPawn.svg';
 import whitePawn from '../../assets/whitePawn.svg';
 import {bindActivePiece, deleteActivePiece} from "../../reducers/activeSlice";
 import { useDispatch, useSelector} from "react-redux";
+import vacantCellsSearch from "../../helpers/vacantCellSearch";
 
 
-export const vacantCellsSearch = (id, obj, getObj = false) => {
-        let status = false, desiredObj = null;
-        for (let i in obj) {
-            status = obj[i].hasOwnProperty(id);
-            if(status) {
-                desiredObj = obj[i][id]
-                break
-            }
-        }
-        if (!getObj) {
-            return status
-        } else {
-            return desiredObj
-        }
-}
 
 const Pawn = ({props}) => {
     const dispatch = useDispatch();
@@ -44,7 +30,7 @@ const Pawn = ({props}) => {
         }
     }
     
-    const moveVariantsHelper = (team, coords) => {
+    const pawnMoveHelper = (team, coords) => {
             let moveArr = [],
             id = idCreator(team),
             nextCellVacant = vacantCellsSearch(id, pieces);
@@ -72,7 +58,7 @@ const Pawn = ({props}) => {
     const onPawnDrag = () => {
         dispatch(bindActivePiece({coords:coords,
                                   piece: "pawns",
-                                  moveArr: moveVariantsHelper(team, coords),
+                                  moveArr: pawnMoveHelper(team, coords),
                                   team,
                                   captureArr:capturesHelper(team, coords)}));
     }

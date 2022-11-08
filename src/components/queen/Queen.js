@@ -1,27 +1,26 @@
 import React from "react";
-import blackBishop from '../../assets/blackBishop.svg';
-import whiteBishop from '../../assets/whiteBishop.svg';
+import blackQueen from '../../assets/blackQueen.svg';
+import whiteQueen from '../../assets/whiteQueen.svg';
 import {bindActivePiece, deleteActivePiece} from "../../reducers/activeSlice";
 import bishopMoveHelper from "../../helpers/bishopMoveHelper";
+import castleMoveHelper from "../../helpers/castleMoveHelper";
 import { useDispatch, useSelector} from "react-redux";
 
-const Bishop = ({props}) => {
+const Queen = ({props}) => {
     const dispatch = useDispatch();
     let {coords, team} = props;
     const pieces = useSelector(state => state.pieces)
     const activeTeam = useSelector(state => state.active.activeTeam)
 
 
-
-
-
-    const onBishopDrag = () => {
-        const {moveArr, captureArr} = bishopMoveHelper(coords, pieces, team);
+    const onQueenDrag = () => {
+        const castleMovesArr = castleMoveHelper(coords,pieces, team),
+              bishopMovesArr = bishopMoveHelper(coords, pieces, team);
         dispatch(bindActivePiece({coords:coords,
-            piece: "bishops",
-            moveArr: moveArr,
+            piece: "queens",
+            moveArr: castleMovesArr.moveArr.concat(bishopMovesArr.moveArr),
             team,
-            captureArr }));
+            captureArr: castleMovesArr.captureArr.concat(bishopMovesArr.captureArr)}));
     }
 
     const onDragEnd = () => {
@@ -30,12 +29,12 @@ const Bishop = ({props}) => {
     return(
         <>
             <img onDragEnd={onDragEnd}
-                 onDragStart={onBishopDrag}
+                 onDragStart={onQueenDrag}
                  draggable={(team === activeTeam)? true : false}
-                 className="piece__castle" src={(team === 'white') ? whiteBishop : blackBishop} 
+                 className="piece__castle" src={(team === 'white') ? whiteQueen : blackQueen} 
                  alt="castle"></img>
         </>
     )
 }
 
-export default Bishop;
+export default Queen;

@@ -2,7 +2,7 @@ import React from "react";
 import blackKnight from '../../assets/blackKnight.svg';
 import whiteKnight from '../../assets/whiteKnight.svg';
 import {bindActivePiece, deleteActivePiece} from "../../reducers/activeSlice";
-import { vacantCellsSearch } from "../pawn/Pawn";
+import vacantCellsSearch from "../../helpers/vacantCellSearch";
 import { useDispatch, useSelector} from "react-redux";
 
 const Knight= ({props}) => {
@@ -12,7 +12,7 @@ const Knight= ({props}) => {
     const activeTeam = useSelector(state => state.active.activeTeam)
 
 
-    const moveVariantsHelper = ( coords) => {
+    const knightMoveHelper = ( coords) => {
         const moveVariants = {
             top: [[coords[0] + 2, coords[1] - 1],[coords[0] + 2, coords[1] + 1]],
             bottom: [[coords[0] - 2, coords[1] - 1],[coords[0] - 2, coords[1] + 1]],
@@ -40,9 +40,9 @@ const Knight= ({props}) => {
     const onKnightDrag = () => {
         dispatch(bindActivePiece({coords:coords,
             piece: "knights",
-            moveArr: moveVariantsHelper(coords).moveArr,
+            moveArr: knightMoveHelper(coords).moveArr,
             team,
-            captureArr:moveVariantsHelper(coords).captureArr }));
+            captureArr: knightMoveHelper(coords).captureArr }));
     }
 
     const onDragEnd = () => {

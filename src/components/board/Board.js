@@ -1,6 +1,6 @@
 import React from "react";
 import Cell from '../cell/Cell';
-import { addPawn, addCastle, addKnight, addBishop } from "../../reducers/piecesSlice";
+import { addPawn, addCastle, addKnight, addBishop, addQueen } from "../../reducers/piecesSlice";
 import { useDispatch } from "react-redux";
 
 
@@ -33,6 +33,10 @@ const Board  = () => {
                 dispatchPiece(addBishop, i, j, 'black')
             } else if (i === 7 && (j === 5 || j === 2)) {
                 dispatchPiece(addBishop, i, j, 'white')
+            } else if(i === 7 && j === 4) {
+                dispatchPiece(addQueen, i, j , 'white')
+            } else if (i === 0 && j === 4) {
+                dispatchPiece(addQueen, i, j, 'black')
             }
             arr.push({coords:[coords[i], coords[j]]})
         }

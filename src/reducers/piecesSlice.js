@@ -5,7 +5,9 @@ const initialState = {
     pawns: {},
     castles: {},
     knights: {},
-    bishops: {}
+    bishops: {},
+    queens: {},
+    kings: {}
 }
 
 const piecesSlice = createSlice({
@@ -23,7 +25,10 @@ const piecesSlice = createSlice({
         },
         addBishop: (state, action) => {
             state.bishops[action.payload.id] = {coords: action.payload.coords, team: action.payload.team};
-        },  
+        },
+        addQueen: (state, action) => {
+            state.queens[action.payload.id] = {coords: action.payload.coords, team: action.payload.team};
+        },
         capturePiece : (state, action) => {
             delete state[action.payload.capturedType][action.payload.capturedId];
             delete state[action.payload.invaderType][action.payload.invaderId];
@@ -44,9 +49,12 @@ const piecesSlice = createSlice({
         changeBishopsCoords: (state, action) => {
             delete state.bishops[action.payload.id];
             state.bishops[`${action.payload.new[0]}` + action.payload.new[1]] = {coords: action.payload.new, team: action.payload.team}
-        }
-    }
-})
+        },
+        changeQueensCoords: (state, action) => {
+            delete state.queens[action.payload.id];
+            state.queens[`${action.payload.new[0]}` + action.payload.new[1]] = {coords: action.payload.new, team: action.payload.team}
+        },
+}})
 
 const {actions, reducer} = piecesSlice;
 
@@ -56,8 +64,10 @@ export const {
     addCastle,
     addKnight,
     addBishop,
+    addQueen,
     changeCastleCoords,
     changePawnCoords,
     capturePiece,
     changeKnightsCoords,
-    changeBishopsCoords  } = actions
+    changeBishopsCoords,
+    changeQueensCoords  } = actions
